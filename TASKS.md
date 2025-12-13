@@ -23,38 +23,38 @@ Conventions:
 
 ## 1) High-level product decisions (lock these early)
 
-- [ ] Decide target scope for v1 arena mode (ship count, weapon types, victory conditions)
-  - [ ] Pick default battle size (example: 2 fleets x 8 ships)
-  - [ ] Pick stress battle size (example: 2 fleets x 30 ships)
-  - [ ] Decide if ships can be destroyed in v1 or only "shield breaks"
-  - [ ] Decide if there is hull damage or only shield/overheat effects for v1
-  - [ ] Decide arena shape (sphere, cube, cylinder, "box with soft boundaries")
-  - [ ] Decide win condition (time limit, last ship, score threshold)
-- [ ] Define the "VFX-first" success criteria (what you want to see)
-  - [ ] Impacts remain readable at distance (silhouette + rim + hotspot)
-  - [ ] Multiple simultaneous impacts remain distinguishable (clustering vs spread)
-  - [ ] Weapon types have distinct signatures (laser/plasma/kinetic/rail/EMP/ion)
-  - [ ] Overload + recovery states are visually obvious
-  - [ ] Performance target (example: 60 FPS at 1920x1080 with v1 fleet size)
-- [ ] Define simulation determinism requirements
-  - [ ] Decide if replays must be bit-for-bit deterministic across refreshes
-  - [ ] Decide how RNG seeds are stored (scenario seed + per-ship seed)
-  - [ ] Decide fixed simulation tick rate (example: 60 Hz or 30 Hz)
+- [X] Decide target scope for v1 arena mode (ship count, weapon types, victory conditions)
+  - [X] Pick default battle size (example: 2 fleets x 8 ships)
+  - [X] Pick stress battle size (example: 2 fleets x 30 ships)
+  - [X] Decide if ships can be destroyed in v1 or only "shield breaks"
+  - [X] Decide if there is hull damage or only shield/overheat effects for v1
+  - [X] Decide arena shape (sphere, cube, cylinder, "box with soft boundaries")
+  - [X] Decide win condition (time limit, last ship, score threshold)
+- [X] Define the "VFX-first" success criteria (what you want to see)
+  - [X] Impacts remain readable at distance (silhouette + rim + hotspot)
+  - [X] Multiple simultaneous impacts remain distinguishable (clustering vs spread)
+  - [X] Weapon types have distinct signatures (laser/plasma/kinetic/rail/EMP/ion)
+  - [X] Overload + recovery states are visually obvious
+  - [X] Performance target (example: 60 FPS at 1920x1080 with v1 fleet size)
+- [X] Define simulation determinism requirements
+  - [X] Decide if replays must be bit-for-bit deterministic across refreshes
+  - [X] Decide how RNG seeds are stored (scenario seed + per-ship seed)
+  - [X] Decide fixed simulation tick rate (example: 60 Hz or 30 Hz)
 
 ---
 
 ## 2) Repo structure for "Lab mode" + "Arena mode"
 
-- [ ] Add a `src/modes/` folder for mode bootstrapping
-  - [ ] Create `src/modes/labMode.js` (wrap the current lab startup)
-  - [ ] Create `src/modes/arenaMode.js` (arena startup)
-- [ ] Add a simple mode router
-  - [ ] Create `src/modeRouter.js` (switch modes, clean up event listeners)
-  - [ ] Ensure each mode exposes `start()` and `dispose()` contracts
-- [ ] Add a top-level mode selector in UI
-  - [ ] Add UI control (dropdown or buttons) to switch `Lab` / `Arena`
-  - [ ] Persist last selected mode in `localStorage`
-  - [ ] Make "Reload in same mode" work reliably
+- [X] Add a `src/modes/` folder for mode bootstrapping
+  - [X] Create `src/modes/labMode.js` (wrap the current lab startup)
+  - [X] Create `src/modes/arenaMode.js` (arena startup)
+- [X] Add a simple mode router
+  - [X] Create `src/modeRouter.js` (switch modes, clean up event listeners)
+  - [X] Ensure each mode exposes `start()` and `dispose()` contracts
+- [X] Add a top-level mode selector in UI
+  - [X] Add UI control (dropdown or buttons) to switch `Lab` / `Arena`
+  - [X] Persist last selected mode in `localStorage`
+  - [X] Make "Reload in same mode" work reliably
 
 ---
 

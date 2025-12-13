@@ -7,6 +7,7 @@ Interactive Three.js "shield bubble" VFX testing lab. The goal is fast iteration
 - `index.html` - UI markup + loads the ES module entrypoint
 - `styles.css` - UI styling
 - `src/` - JavaScript modules (app + lab subsystems)
+- `src/modes/` - mode bootstrappers for the lab and arena routers
 - `index.single.html` - original single-file prototype kept for reference
 - `README.md` / `project.MD` - docs
 
@@ -37,6 +38,24 @@ Notes:
   - `1`-`6` - select weapon (laser/plasma/kinetic/railgun/emp/ion)
 
 HUD (top-left) shows FPS, shield energy %, and overload state.
+
+## Arena v1 direction
+
+- Scope and rules:
+  - Default battle size: 2 fleets × 8 ships (fighters/interceptors/corvettes) tuned for VFX readability.
+  - Stress battle size: 2 fleets × 30 ships to validate performance and visual clarity under load.
+  - Destruction model: v1 focuses on shield breaks; ships are disabled when shields collapse, with hull damage deferred.
+  - Arena shape: soft spherical boundary (pushback + speed clamp) sized for mid-range engagements.
+  - Win condition: last fleet with active ships; 5-minute timeout falls back to a score based on shield uptime/impacts.
+- VFX-first success criteria:
+  - Impacts readable at default camera distances via rim/hotspot silhouettes and per-weapon color signatures.
+  - Dense impact sequences remain distinguishable through positional spread and capped clustering per shield.
+  - Overload/recovery states visibly obvious (heat shimmer, opacity/pulse cues), distinct from EMP/ion looks.
+  - Target performance: 60 FPS at 1080p for default battles; graceful degradation strategies for stress tests.
+- Determinism plan:
+  - Replays must be reproducible across refreshes from a scenario seed.
+  - Per-ship seeds derive from the scenario seed + deterministic entity IDs; no `Math.random()` in sim paths.
+  - Fixed simulation tick: 60 Hz; rendering remains decoupled from simulation timing.
 
 ## What the lab simulates
 

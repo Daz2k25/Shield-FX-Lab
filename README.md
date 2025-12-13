@@ -14,5 +14,11 @@ This is a static site (no build step). Start a local server and open the page:
 - `index.html` - UI markup + loads the ES module entrypoint
 - `styles.css` - UI styles
 - `src/` - JavaScript modules (Three.js via CDN ESM imports)
+- `src/modes/` - lab/arena bootstrap + mode router helpers
 - `index.single.html` - original single-file prototype kept for reference
 - `project.MD` - deeper technical notes / architecture
+
+## Modes
+
+- Use the **Mode** selector at the top of the UI to switch between Lab (current shield FX sandbox) and Arena (deterministic combat scaffold, WIP).
+- Last-used mode is saved to `localStorage` so refreshes reopen in the same context.
