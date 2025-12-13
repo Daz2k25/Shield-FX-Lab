@@ -9,6 +9,12 @@ import { createShieldSystem } from './lab/shield.js';
 import { createFxSystem } from './lab/fx.js';
 
 export function startApp() {
+  const disposers = [];
+  const addListener = (target, event, handler, options) => {
+    target.addEventListener(event, handler, options);
+    disposers.push(() => target.removeEventListener(event, handler, options));
+  };
+
   // -----------------------------
   // Utilities
   // -----------------------------
@@ -169,7 +175,7 @@ export function startApp() {
     return null;
   }
 
-  renderer.domElement.addEventListener('pointerdown', (e) => {
+  addListener(renderer.domElement, 'pointerdown', (e) => {
     const p = raycastShield(e.clientX, e.clientY);
     if (p) setAimAt(p);
   });
@@ -534,13 +540,14 @@ export function startApp() {
   };
 
   const shieldUniforms = shieldSys.shieldUniforms;
+  ui.autoSweepBtn.textContent = 'Auto Impact Sweep';
 
   function bindSlider(slider, valueEl, key, fmtFn = (v) => fmt(v, 2), suffix = '') {
     const update = () => {
       state[key] = parseFloat(slider.value);
       valueEl.textContent = fmtFn(state[key]) + suffix;
     };
-    slider.addEventListener('input', update);
+    addListener(slider, 'input', update);
     update();
   }
 
@@ -563,45 +570,45 @@ export function startApp() {
   bindSlider(ui.dmg, document.getElementById('dmgV'), 'dmg', (v) => fmt(v, 2));
   bindSlider(ui.firerate, document.getElementById('firerateV'), 'fireRate', (v) => fmt(v, 1), '/s');
 
-  ui.baseColor.addEventListener('input', () => (state.baseColor = ui.baseColor.value));
-  ui.rimColor.addEventListener('input', () => (state.rimColor = ui.rimColor.value));
+  addListener(ui.baseColor, 'input', () => (state.baseColor = ui.baseColor.value));
+  addListener(ui.rimColor, 'input', () => (state.rimColor = ui.rimColor.value));
 
-  ui.shipSel.addEventListener('change', () => {
+  addListener(ui.shipSel, 'change', () => {
     state.ship = ui.shipSel.value;
     ships.setShip(state.ship);
   });
 
-  ui.presetSel.addEventListener('change', () => {
+  addListener(ui.presetSel, 'change', () => {
     state.preset = parseInt(ui.presetSel.value, 10);
     shieldUniforms.uPreset.value = state.preset;
   });
 
-  ui.weaponSel.addEventListener('change', () => (state.weapon = ui.weaponSel.value));
-  ui.slowSel.addEventListener('change', () => (state.slow = parseFloat(ui.slowSel.value)));
-  ui.impactCam.addEventListener('change', () => (state.impactCam = ui.impactCam.checked));
-  ui.tightBubble.addEventListener('change', () => (state.tightBubble = ui.tightBubble.checked));
+  addListener(ui.weaponSel, 'change', () => (state.weapon = ui.weaponSel.value));
+  addListener(ui.slowSel, 'change', () => (state.slow = parseFloat(ui.slowSel.value)));
+  addListener(ui.impactCam, 'change', () => (state.impactCam = ui.impactCam.checked));
+  addListener(ui.tightBubble, 'change', () => (state.tightBubble = ui.tightBubble.checked));
 
-  ui.fireBtn.addEventListener('click', () => {
+  addListener(ui.fireBtn, 'click', () => {
     clearRunners();
     fireOnce();
   });
-  ui.burstBtn.addEventListener('click', burstTest);
-  ui.sustainBtn.addEventListener('click', sustainedTest);
-  ui.resetBtn.addEventListener('click', () => {
+  addListener(ui.burstBtn, 'click', burstTest);
+  addListener(ui.sustainBtn, 'click', sustainedTest);
+  addListener(ui.resetBtn, 'click', () => {
     clearRunners();
     resetShield();
   });
 
-  ui.precisionBtn.addEventListener('click', precisionScenario);
-  ui.scatterBtn.addEventListener('click', scatterScenario);
-  ui.sweepBtn.addEventListener('click', sweepScenario);
-  ui.stressBtn.addEventListener('click', stressScenario);
-  ui.autoSweepBtn.addEventListener('click', toggleAutoSweep);
+  addListener(ui.precisionBtn, 'click', precisionScenario);
+  addListener(ui.scatterBtn, 'click', scatterScenario);
+  addListener(ui.sweepBtn, 'click', sweepScenario);
+  addListener(ui.stressBtn, 'click', stressScenario);
+  addListener(ui.autoSweepBtn, 'click', toggleAutoSweep);
 
   // -----------------------------
   // Keyboard shortcuts
   // -----------------------------
-  window.addEventListener('keydown', (e) => {
+  addListener(window, 'keydown', (e) => {
     if (e.repeat) return;
     if (e.code === 'Space') {
       e.preventDefault();
@@ -698,7 +705,7 @@ export function startApp() {
   // -----------------------------
   // Resize
   // -----------------------------
-  window.addEventListener('resize', () => {
+  addListener(window, 'resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -709,7 +716,10 @@ export function startApp() {
   // -----------------------------
   // Main loop
   // -----------------------------
+  let disposed = false;
+  let rafId = null;
   function tick() {
+    if (disposed) return;
     const rawDt = clock.getDelta();
     const dt = rawDt * state.slow;
     const t = clock.getElapsedTime();
@@ -747,10 +757,25 @@ export function startApp() {
       fpsFrames = 0;
     }
 
-    requestAnimationFrame(tick);
+    rafId = requestAnimationFrame(tick);
   }
 
   tick();
 
-  return { renderer, scene, camera, controls, state };
+  function dispose() {
+    disposed = true;
+    if (rafId !== null) cancelAnimationFrame(rafId);
+    clearRunners();
+    autoSweep = false;
+    ui.autoSweepBtn.textContent = 'Auto Impact Sweep';
+    fxSys.killAllFX();
+    disposers.forEach((fn) => fn());
+    controls.dispose();
+    renderer.dispose();
+    if (renderer.domElement.parentElement) {
+      renderer.domElement.parentElement.removeChild(renderer.domElement);
+    }
+  }
+
+  return { renderer, scene, camera, controls, state, dispose };
 }

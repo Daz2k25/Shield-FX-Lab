@@ -18,205 +18,234 @@
 
 <body>
   <div id="ui">
-    <header>
-      <div id="title">
-        <div class="h1">Shield FX Testing Lab</div>
-        <div class="sub">Click the shield to aim • Built for fast FX iteration</div>
-      </div>
-      <div id="hudPills">
-        <div class="pill" id="fpsPill">FPS <b id="fps">--</b></div>
-        <div class="pill ok" id="energyPill">Shield <b id="energy">100</b>%</div>
-        <div class="pill" id="overPill">Overload <b id="overload">NO</b></div>
-      </div>
-    </header>
+    <div id="modeBar">
+      <label class="modeLabel">Mode
+        <select id="modeSelect">
+          <option value="lab">Lab Mode</option>
+          <option value="arena">Arena Mode</option>
+        </select>
+      </label>
+      <div id="modeStatus" class="modeStatus">FX Lab</div>
+    </div>
 
-    <div class="section">
-      <div class="sectionTitle">
-        <span>Setup</span>
-        <span class="hint">Ship + Shield + Weapon</span>
-      </div>
-      <div class="grid2">
-        <label>Ship
-          <select id="shipSel">
-            <option value="fighter">Light Fighter</option>
-            <option value="interceptor">Interceptor</option>
-            <option value="corvette">Corvette</option>
-            <option value="freighter">Freighter / Tanker</option>
-          </select>
-        </label>
-        <label>Shield Preset
-          <select id="presetSel">
-            <option value="0">Classic Energy Bubble</option>
-            <option value="1">Hex / Cellular</option>
-            <option value="2">Magnetic Field Lines</option>
-            <option value="3">Hard‑Light Glass</option>
-          </select>
-        </label>
+    <div id="labUi" class="modePanel">
+      <header>
+        <div id="title">
+          <div class="h1">Shield FX Testing Lab</div>
+          <div class="sub">Click the shield to aim • Built for fast FX iteration</div>
+        </div>
+        <div id="hudPills">
+          <div class="pill" id="fpsPill">FPS <b id="fps">--</b></div>
+          <div class="pill ok" id="energyPill">Shield <b id="energy">100</b>%</div>
+          <div class="pill" id="overPill">Overload <b id="overload">NO</b></div>
+        </div>
+      </header>
+
+      <div class="section">
+        <div class="sectionTitle">
+          <span>Setup</span>
+          <span class="hint">Ship + Shield + Weapon</span>
+        </div>
+        <div class="grid2">
+          <label>Ship
+            <select id="shipSel">
+              <option value="fighter">Light Fighter</option>
+              <option value="interceptor">Interceptor</option>
+              <option value="corvette">Corvette</option>
+              <option value="freighter">Freighter / Tanker</option>
+            </select>
+          </label>
+          <label>Shield Preset
+            <select id="presetSel">
+              <option value="0">Classic Energy Bubble</option>
+              <option value="1">Hex / Cellular</option>
+              <option value="2">Magnetic Field Lines</option>
+              <option value="3">Hard‑Light Glass</option>
+            </select>
+          </label>
+        </div>
+
+        <div style="height:10px"></div>
+
+        <div class="grid2">
+          <label>Weapon
+            <select id="weaponSel">
+              <option value="laser">Laser Beam</option>
+              <option value="plasma">Plasma Bolt</option>
+              <option value="kinetic">Kinetic Slug</option>
+              <option value="railgun">Railgun</option>
+              <option value="emp">EMP Pulse</option>
+              <option value="ion">Ion / Arc</option>
+            </select>
+          </label>
+          <label>Slow Motion
+            <select id="slowSel">
+              <option value="1">1×</option>
+              <option value="0.5">0.5×</option>
+              <option value="0.25">0.25×</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="note">
+          <b>Shortcuts:</b> <span class="kbd">Space</span> Fire • <span class="kbd">R</span> Reset • <span class="kbd">1-6</span> Weapon • <span class="kbd">C</span> Impact Camera • <span class="kbd">O</span> Auto Sweep
+        </div>
       </div>
 
-      <div style="height:10px"></div>
+      <div class="section">
+        <div class="sectionTitle">
+          <span>Shield Look</span>
+          <span class="hint">Make it pop</span>
+        </div>
 
-      <div class="grid2">
-        <label>Weapon
-          <select id="weaponSel">
-            <option value="laser">Laser Beam</option>
-            <option value="plasma">Plasma Bolt</option>
-            <option value="kinetic">Kinetic Slug</option>
-            <option value="railgun">Railgun</option>
-            <option value="emp">EMP Pulse</option>
-            <option value="ion">Ion / Arc</option>
-          </select>
-        </label>
-        <label>Slow Motion
-          <select id="slowSel">
-            <option value="1">1×</option>
-            <option value="0.5">0.5×</option>
-            <option value="0.25">0.25×</option>
-          </select>
-        </label>
+        <div class="grid2">
+          <label>Base Color
+            <input id="baseColor" type="color" value="#2b8cff"/>
+          </label>
+          <label>Rim Color
+            <input id="rimColor" type="color" value="#b6f7ff"/>
+          </label>
+        </div>
+
+        <div style="height:10px"></div>
+
+        <div class="sliderRow">
+          <label style="grid-column:1 / span 2; gap:8px;">Opacity</label>
+          <input id="opacity" type="range" min="0.05" max="0.9" step="0.01" value="0.28"/>
+          <div class="val" id="opacityV">0.28</div>
+
+          <label style="grid-column:1 / span 2; gap:8px;">Thickness (fake)</label>
+          <input id="thickness" type="range" min="0.0" max="1.5" step="0.01" value="0.75"/>
+          <div class="val" id="thicknessV">0.75</div>
+
+          <label style="grid-column:1 / span 2; gap:8px;">Fresnel Power</label>
+          <input id="fresnelPow" type="range" min="0.5" max="8.0" step="0.01" value="3.4"/>
+          <div class="val" id="fresnelPowV">3.40</div>
+
+          <label style="grid-column:1 / span 2; gap:8px;">Fresnel Intensity</label>
+          <input id="fresnelInt" type="range" min="0.0" max="3.0" step="0.01" value="1.25"/>
+          <div class="val" id="fresnelIntV">1.25</div>
+
+          <label style="grid-column:1 / span 2; gap:8px;">Noise Scale</label>
+          <input id="noiseScale" type="range" min="0.25" max="8.0" step="0.01" value="2.25"/>
+          <div class="val" id="noiseScaleV">2.25</div>
+
+          <label style="grid-column:1 / span 2; gap:8px;">Noise Speed</label>
+          <input id="noiseSpeed" type="range" min="0.0" max="3.0" step="0.01" value="0.65"/>
+          <div class="val" id="noiseSpeedV">0.65</div>
+
+          <label style="grid-column:1 / span 2; gap:8px;">Noise Intensity</label>
+          <input id="noiseInt" type="range" min="0.0" max="2.5" step="0.01" value="0.75"/>
+          <div class="val" id="noiseIntV">0.75</div>
+
+          <label style="grid-column:1 / span 2; gap:8px;">Hex Density (preset 2)</label>
+          <input id="hexDensity" type="range" min="2.0" max="40.0" step="0.1" value="14.0"/>
+          <div class="val" id="hexDensityV">14.0</div>
+
+          <label style="grid-column:1 / span 2; gap:8px;">Shield Radius</label>
+          <input id="radius" type="range" min="3.0" max="18.0" step="0.01" value="8.50"/>
+          <div class="val" id="radiusV">8.50</div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="grid2">
+          <label style="flex-direction:row; align-items:center; gap:10px; color:var(--txt);">
+            <input id="impactCam" type="checkbox" checked />
+            Impact Camera
+          </label>
+          <label style="flex-direction:row; align-items:center; gap:10px; color:var(--txt);">
+            <input id="tightBubble" type="checkbox" />
+            “Conformal” (tight bubble)
+          </label>
+        </div>
       </div>
 
-      <div class="note">
-        <b>Shortcuts:</b> <span class="kbd">Space</span> Fire • <span class="kbd">R</span> Reset • <span class="kbd">1-6</span> Weapon • <span class="kbd">C</span> Impact Camera • <span class="kbd">O</span> Auto Sweep
+      <div class="section">
+        <div class="sectionTitle">
+          <span>Impact Response</span>
+          <span class="hint">Ripples + overload</span>
+        </div>
+
+        <div class="sliderRow">
+          <label style="grid-column:1 / span 2; gap:8px;">Ripple Strength</label>
+          <input id="rippleStr" type="range" min="0.0" max="2.5" step="0.01" value="1.15"/>
+          <div class="val" id="rippleStrV">1.15</div>
+
+          <label style="grid-column:1 / span 2; gap:8px;">Ripple Speed</label>
+          <input id="rippleSpd" type="range" min="0.1" max="8.0" step="0.01" value="2.8"/>
+          <div class="val" id="rippleSpdV">2.80</div>
+
+          <label style="grid-column:1 / span 2; gap:8px;">Ripple Decay</label>
+          <input id="rippleDec" type="range" min="0.2" max="6.0" step="0.01" value="2.15"/>
+          <div class="val" id="rippleDecV">2.15</div>
+
+          <label style="grid-column:1 / span 2; gap:8px;">Overload Threshold</label>
+          <input id="overThr" type="range" min="0.2" max="3.0" step="0.01" value="1.25"/>
+          <div class="val" id="overThrV">1.25</div>
+
+          <label style="grid-column:1 / span 2; gap:8px;">Recovery Rate</label>
+          <input id="recRate" type="range" min="0.02" max="1.2" step="0.01" value="0.28"/>
+          <div class="val" id="recRateV">0.28</div>
+
+          <label style="grid-column:1 / span 2; gap:8px;">Weapon Damage</label>
+          <input id="dmg" type="range" min="0.2" max="5.0" step="0.01" value="1.0"/>
+          <div class="val" id="dmgV">1.00</div>
+
+          <label style="grid-column:1 / span 2; gap:8px;">Fire Rate</label>
+          <input id="firerate" type="range" min="0.4" max="20.0" step="0.1" value="6.0"/>
+          <div class="val" id="firerateV">6.0/s</div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="btnRow">
+          <button class="primary" id="fireBtn">Fire (single)</button>
+          <button id="burstBtn">Burst Test</button>
+          <button id="sustainBtn">Sustained Test</button>
+          <button class="danger" id="resetBtn">Reset Shield</button>
+        </div>
+
+        <div style="height:10px"></div>
+
+        <div class="miniRow">
+          <button id="precisionBtn">Precision</button>
+          <button id="scatterBtn">Scatter</button>
+          <button id="sweepBtn">Sweep</button>
+        </div>
+
+        <div style="height:10px"></div>
+
+        <div class="btnRow">
+          <button id="stressBtn">Stress Test</button>
+          <button id="autoSweepBtn">Auto Impact Sweep</button>
+        </div>
+
+        <div class="note">
+          <b>Aiming:</b> click on the shield to set an impact point. Tests use that point when possible.
+        </div>
       </div>
     </div>
 
-    <div class="section">
-      <div class="sectionTitle">
-        <span>Shield Look</span>
-        <span class="hint">Make it pop</span>
-      </div>
-
-      <div class="grid2">
-        <label>Base Color
-          <input id="baseColor" type="color" value="#2b8cff"/>
-        </label>
-        <label>Rim Color
-          <input id="rimColor" type="color" value="#b6f7ff"/>
-        </label>
-      </div>
-
-      <div style="height:10px"></div>
-
-      <div class="sliderRow">
-        <label style="grid-column:1 / span 2; gap:8px;">Opacity</label>
-        <input id="opacity" type="range" min="0.05" max="0.9" step="0.01" value="0.28"/>
-        <div class="val" id="opacityV">0.28</div>
-
-        <label style="grid-column:1 / span 2; gap:8px;">Thickness (fake)</label>
-        <input id="thickness" type="range" min="0.0" max="1.5" step="0.01" value="0.75"/>
-        <div class="val" id="thicknessV">0.75</div>
-
-        <label style="grid-column:1 / span 2; gap:8px;">Fresnel Power</label>
-        <input id="fresnelPow" type="range" min="0.5" max="8.0" step="0.01" value="3.4"/>
-        <div class="val" id="fresnelPowV">3.40</div>
-
-        <label style="grid-column:1 / span 2; gap:8px;">Fresnel Intensity</label>
-        <input id="fresnelInt" type="range" min="0.0" max="3.0" step="0.01" value="1.25"/>
-        <div class="val" id="fresnelIntV">1.25</div>
-
-        <label style="grid-column:1 / span 2; gap:8px;">Noise Scale</label>
-        <input id="noiseScale" type="range" min="0.25" max="8.0" step="0.01" value="2.25"/>
-        <div class="val" id="noiseScaleV">2.25</div>
-
-        <label style="grid-column:1 / span 2; gap:8px;">Noise Speed</label>
-        <input id="noiseSpeed" type="range" min="0.0" max="3.0" step="0.01" value="0.65"/>
-        <div class="val" id="noiseSpeedV">0.65</div>
-
-        <label style="grid-column:1 / span 2; gap:8px;">Noise Intensity</label>
-        <input id="noiseInt" type="range" min="0.0" max="2.5" step="0.01" value="0.75"/>
-        <div class="val" id="noiseIntV">0.75</div>
-
-        <label style="grid-column:1 / span 2; gap:8px;">Hex Density (preset 2)</label>
-        <input id="hexDensity" type="range" min="2.0" max="40.0" step="0.1" value="14.0"/>
-        <div class="val" id="hexDensityV">14.0</div>
-
-        <label style="grid-column:1 / span 2; gap:8px;">Shield Radius</label>
-        <input id="radius" type="range" min="3.0" max="18.0" step="0.01" value="8.50"/>
-        <div class="val" id="radiusV">8.50</div>
-      </div>
-
-      <div style="height:12px"></div>
-
-      <div class="grid2">
-        <label style="flex-direction:row; align-items:center; gap:10px; color:var(--txt);">
-          <input id="impactCam" type="checkbox" checked />
-          Impact Camera
-        </label>
-        <label style="flex-direction:row; align-items:center; gap:10px; color:var(--txt);">
-          <input id="tightBubble" type="checkbox" />
-          “Conformal” (tight bubble)
-        </label>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="sectionTitle">
-        <span>Impact Response</span>
-        <span class="hint">Ripples + overload</span>
-      </div>
-
-      <div class="sliderRow">
-        <label style="grid-column:1 / span 2; gap:8px;">Ripple Strength</label>
-        <input id="rippleStr" type="range" min="0.0" max="2.5" step="0.01" value="1.15"/>
-        <div class="val" id="rippleStrV">1.15</div>
-
-        <label style="grid-column:1 / span 2; gap:8px;">Ripple Speed</label>
-        <input id="rippleSpd" type="range" min="0.1" max="8.0" step="0.01" value="2.8"/>
-        <div class="val" id="rippleSpdV">2.80</div>
-
-        <label style="grid-column:1 / span 2; gap:8px;">Ripple Decay</label>
-        <input id="rippleDec" type="range" min="0.2" max="6.0" step="0.01" value="2.15"/>
-        <div class="val" id="rippleDecV">2.15</div>
-
-        <label style="grid-column:1 / span 2; gap:8px;">Overload Threshold</label>
-        <input id="overThr" type="range" min="0.2" max="3.0" step="0.01" value="1.25"/>
-        <div class="val" id="overThrV">1.25</div>
-
-        <label style="grid-column:1 / span 2; gap:8px;">Recovery Rate</label>
-        <input id="recRate" type="range" min="0.02" max="1.2" step="0.01" value="0.28"/>
-        <div class="val" id="recRateV">0.28</div>
-
-        <label style="grid-column:1 / span 2; gap:8px;">Weapon Damage</label>
-        <input id="dmg" type="range" min="0.2" max="5.0" step="0.01" value="1.0"/>
-        <div class="val" id="dmgV">1.00</div>
-
-        <label style="grid-column:1 / span 2; gap:8px;">Fire Rate</label>
-        <input id="firerate" type="range" min="0.4" max="20.0" step="0.1" value="6.0"/>
-        <div class="val" id="firerateV">6.0/s</div>
-      </div>
-
-      <div style="height:12px"></div>
-
-      <div class="btnRow">
-        <button class="primary" id="fireBtn">Fire (single)</button>
-        <button id="burstBtn">Burst Test</button>
-        <button id="sustainBtn">Sustained Test</button>
-        <button class="danger" id="resetBtn">Reset Shield</button>
-      </div>
-
-      <div style="height:10px"></div>
-
-      <div class="miniRow">
-        <button id="precisionBtn">Precision</button>
-        <button id="scatterBtn">Scatter</button>
-        <button id="sweepBtn">Sweep</button>
-      </div>
-
-      <div style="height:10px"></div>
-
-      <div class="btnRow">
-        <button id="stressBtn">Stress Test</button>
-        <button id="autoSweepBtn">Auto Impact Sweep</button>
-      </div>
-
-      <div class="note">
-        <b>Aiming:</b> click on the shield to set an impact point. Tests use that point when possible.
+    <div id="arenaUi" class="modePanel hidden">
+      <div class="section">
+        <div class="sectionTitle">
+          <span>Arena Mode (WIP)</span>
+          <span class="hint">Deterministic fleet combat scaffold</span>
+        </div>
+        <div class="note">Arena mode will host multi-ship battles once the simulation core is in place.</div>
+        <div class="grid2">
+          <div class="pill compact">Status <b id="arenaStatus">Arena mode paused</b></div>
+          <div class="pill compact">Seed <b id="arenaSeed">--</b></div>
+        </div>
+        <div class="btnRow">
+          <button id="arenaSeedBtn">New Seed</button>
+        </div>
       </div>
     </div>
   </div>
 
-  <div id="help">
+  <div id="help" class="labHelp">
     <b>Shield readability tips:</b> push <code>Fresnel Intensity</code> + <code>Ripple Strength</code> up, keep <code>Opacity</code> ~0.18–0.35, and increase <code>Noise Scale</code> for “energy flow”.
     <br/><b>EMP:</b> looks best on presets 1–3. <b>Ion:</b> shows arcs crawling to emitter nodes.
   </div>
