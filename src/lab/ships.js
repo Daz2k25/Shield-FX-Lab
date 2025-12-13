@@ -2,9 +2,10 @@ import { THREE } from '../vendor/three.js';
 import { makeGlowSprite } from '../gfx/glowSprite.js';
 import { emissive, metal, paint } from './materials.js';
 
-export function createShipSystem(scene) {
+export function createShipSystem(scene, { scale = 4.5, position = new THREE.Vector3(0, 0, 0) } = {}) {
   const shipRoot = new THREE.Group();
-  shipRoot.position.set(0, 1.05, 0);
+  shipRoot.position.copy(position);
+  shipRoot.scale.setScalar(scale);
   scene.add(shipRoot);
 
   const addEngineGlow = (group, pos, color = 0x66d9ff, scale = 0.6) => {
@@ -288,4 +289,3 @@ export function createShipSystem(scene) {
     getEmitters: () => shipEmitters,
   };
 }
-

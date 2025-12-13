@@ -27,18 +27,17 @@ export function startApp() {
   document.body.appendChild(renderer.domElement);
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x05060a);
-  scene.fog = new THREE.FogExp2(0x070912, 0.035);
+  scene.background = new THREE.Color(0x000000);
 
-  const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 120);
-  camera.position.set(6.2, 3.6, 6.2);
+  const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.5, 3500);
+  camera.position.set(20, 9, 20);
 
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
-  controls.minDistance = 2.0;
-  controls.maxDistance = 18.0;
-  controls.target.set(0, 1.15, 0);
+  controls.minDistance = 12.0;
+  controls.maxDistance = 260.0;
+  controls.target.set(0, 1.2, 0);
 
   const clock = new THREE.Clock();
 
@@ -63,7 +62,7 @@ export function startApp() {
     noiseSpeed: 0.65,
     noiseInt: 0.75,
     hexDensity: 14.0,
-    radius: 1.75,
+    radius: 8.5,
 
     rippleStr: 1.15,
     rippleSpd: 2.8,
@@ -81,6 +80,7 @@ export function startApp() {
   // -----------------------------
   const envCube = createEnvCube();
   scene.environment = envCube;
+  scene.background = envCube;
   const env = createLabEnvironment({ scene, renderer });
 
   // -----------------------------
@@ -657,6 +657,7 @@ export function startApp() {
 
     shieldSys.shield.scale.setScalar(state.radius / 1.75);
     shieldSys.shieldGlow.scale.setScalar((state.radius * 1.018) / 1.78);
+    shieldSys.aim.scale.setScalar(state.radius / 1.75);
 
     if (state.tightBubble) {
       shieldSys.shield.scale.setScalar((state.radius * 0.93) / 1.75);
@@ -716,8 +717,6 @@ export function startApp() {
     const currentShip = ships.getCurrentShip();
     if (currentShip) {
       currentShip.rotation.y += dt * 0.12;
-      const bob = 0.05 * Math.sin(t * 1.2);
-      ships.shipRoot.position.y = 1.05 + bob;
       shieldSys.shield.position.copy(ships.shipRoot.position);
       shieldSys.shieldGlow.position.copy(ships.shipRoot.position);
     }

@@ -1,6 +1,6 @@
 # Shield FX Lab
 
-Interactive Three.js "shield bubble" VFX testing lab for iterating on readability (rim/Fresnel, noise flow, hex/cellular patterns) and impact response (ripples, hotspots, cracks) across weapon types.
+Interactive Three.js "shield bubble" VFX testing lab for iterating on readability (rim/Fresnel, noise flow, hex/cellular patterns) and impact response (ripples, hotspots, cracks) across weapon types, set in a deep-space backdrop.
 
 ## Run locally
 

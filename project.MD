@@ -76,7 +76,7 @@ Each weapon influences impact strength, spark amount, ring/hot multipliers, and 
 - Renderer/scene/camera: WebGLRenderer with sRGB output + ACES tone mapping; OrbitControls.
 - Procedural environment:
   - procedural cube texture used for fake refraction/reflection in the shield shader (`uEnv`)
-  - hangar-ish floor/walls/rails + cinematic lights
+  - deep space set dressing (layered starfields, nebula sprites, distant planet) + cinematic sun/rim lighting
   - glow sprites (canvas-generated) for "fake bloom"
 - Ship factory:
   - procedural ship silhouettes (`buildFighter`, `buildInterceptor`, `buildCorvette`, `buildFreighter`)

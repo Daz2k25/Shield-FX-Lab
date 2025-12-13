@@ -1,138 +1,132 @@
 import { THREE } from '../vendor/three.js';
 import { makeGlowSprite } from '../gfx/glowSprite.js';
 
-function makeGridTexture(renderer) {
-  const c = document.createElement('canvas');
-  c.width = c.height = 512;
-  const ctx = c.getContext('2d');
-  ctx.fillStyle = '#070913';
-  ctx.fillRect(0, 0, c.width, c.height);
-
-  const drawLine = (x1, y1, x2, y2, a, w) => {
-    ctx.strokeStyle = `rgba(140,190,255,${a})`;
-    ctx.lineWidth = w;
-    ctx.beginPath();
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
-    ctx.stroke();
-  };
-
-  for (let i = 0; i <= 32; i++) {
-    const t = i / 32;
-    const y = t * c.height;
-    drawLine(0, y, c.width, y, i % 8 === 0 ? 0.22 : 0.08, i % 8 === 0 ? 2 : 1);
-    const x = t * c.width;
-    drawLine(x, 0, x, c.height, i % 8 === 0 ? 0.22 : 0.08, i % 8 === 0 ? 2 : 1);
-  }
-
-  ctx.globalAlpha = 0.06;
-  for (let i = 0; i < 4000; i++) {
-    const x = Math.random() * c.width,
-      y = Math.random() * c.height;
-    const a = Math.random();
-    ctx.fillStyle = `rgba(255,255,255,${a})`;
-    ctx.fillRect(x, y, 1, 1);
-  }
-  ctx.globalAlpha = 1;
-
-  const tex = new THREE.CanvasTexture(c);
-  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-  tex.repeat.set(3.5, 3.5);
-  tex.encoding = THREE.sRGBEncoding;
-  tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-  tex.needsUpdate = true;
-  return tex;
+function randomPointOnSphere(radius) {
+  const v = new THREE.Vector3(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1);
+  v.normalize();
+  return v.multiplyScalar(radius);
 }
 
-export function createLabEnvironment({ scene, renderer }) {
-  const lab = new THREE.Group();
-  scene.add(lab);
+function makeStarLayer({ count, radius, radiusJitter, sizePx, opacity }) {
+  const positions = new Float32Array(count * 3);
+  const colors = new Float32Array(count * 3);
 
-  const gridTex = makeGridTexture(renderer);
+  for (let i = 0; i < count; i++) {
+    const r = radius + (Math.random() * 2 - 1) * radiusJitter;
+    const p = randomPointOnSphere(r);
+    positions[i * 3 + 0] = p.x;
+    positions[i * 3 + 1] = p.y;
+    positions[i * 3 + 2] = p.z;
 
-  const floorMat = new THREE.MeshStandardMaterial({
-    color: 0x0a0d16,
-    metalness: 0.65,
-    roughness: 0.28,
-    envMapIntensity: 0.6,
-    map: gridTex,
-  });
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), floorMat);
-  floor.rotation.x = -Math.PI / 2;
-  floor.position.y = 0;
-  floor.receiveShadow = false;
-  lab.add(floor);
-
-  const wallMat = new THREE.MeshStandardMaterial({
-    color: 0x070913,
-    metalness: 0.3,
-    roughness: 0.85,
-    envMapIntensity: 0.25,
-  });
-  const backWall = new THREE.Mesh(new THREE.PlaneGeometry(40, 16), wallMat);
-  backWall.position.set(0, 8, -12);
-  lab.add(backWall);
-
-  const sideWallL = new THREE.Mesh(new THREE.PlaneGeometry(24, 16), wallMat);
-  sideWallL.position.set(-12, 8, 0);
-  sideWallL.rotation.y = Math.PI / 2;
-  lab.add(sideWallL);
-
-  const sideWallR = new THREE.Mesh(new THREE.PlaneGeometry(24, 16), wallMat);
-  sideWallR.position.set(12, 8, 0);
-  sideWallR.rotation.y = -Math.PI / 2;
-  lab.add(sideWallR);
-
-  const railMat = new THREE.MeshStandardMaterial({
-    color: 0x0b1230,
-    metalness: 0.7,
-    roughness: 0.35,
-    envMapIntensity: 0.55,
-  });
-  for (let i = 0; i < 6; i++) {
-    const rail = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.22, 18), railMat);
-    rail.position.set(-7 + i * 2.8, 0.11, -3);
-    lab.add(rail);
+    const t = Math.random();
+    const col =
+      t < 0.72
+        ? [1.0, 1.0, 1.0]
+        : t < 0.86
+          ? [0.72, 0.86, 1.0]
+          : t < 0.94
+            ? [1.0, 0.82, 0.66]
+            : [0.78, 1.0, 0.88];
+    colors[i * 3 + 0] = col[0];
+    colors[i * 3 + 1] = col[1];
+    colors[i * 3 + 2] = col[2];
   }
 
-  const key = new THREE.DirectionalLight(0xbfe6ff, 3.2);
-  key.position.set(6, 8, 3);
-  scene.add(key);
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
-  const fill = new THREE.DirectionalLight(0x88aaff, 1.2);
-  fill.position.set(-6, 5, 7);
-  scene.add(fill);
+  const mat = new THREE.PointsMaterial({
+    size: sizePx,
+    sizeAttenuation: false,
+    vertexColors: true,
+    transparent: true,
+    opacity,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+  });
 
-  const rim = new THREE.DirectionalLight(0x8cffd8, 2.0);
-  rim.position.set(-5, 7, -8);
+  const pts = new THREE.Points(geo, mat);
+  pts.renderOrder = -1000;
+  return pts;
+}
+
+export function createLabEnvironment({ scene }) {
+  const space = new THREE.Group();
+  scene.add(space);
+
+  const sun = new THREE.DirectionalLight(0xfff1d6, 3.0);
+  sun.position.set(10, 6, 10);
+  scene.add(sun);
+
+  const rim = new THREE.DirectionalLight(0x66d9ff, 1.25);
+  rim.position.set(-10, 4, -8);
   scene.add(rim);
 
-  const practicals = [];
-  const addPractical = (x, y, z, color, intensity, dist) => {
-    const p = new THREE.PointLight(color, intensity, dist, 2.2);
-    p.position.set(x, y, z);
-    scene.add(p);
+  const ambient = new THREE.AmbientLight(0x0b1020, 0.55);
+  scene.add(ambient);
 
-    const bulb = makeGlowSprite(new THREE.Color(color), 0.9);
-    bulb.position.copy(p.position);
-    bulb.scale.setScalar(0.7);
-    lab.add(bulb);
+  const starsFar = makeStarLayer({ count: 9000, radius: 1800, radiusJitter: 260, sizePx: 1.2, opacity: 0.9 });
+  const starsNear = makeStarLayer({ count: 2400, radius: 620, radiusJitter: 80, sizePx: 1.6, opacity: 0.55 });
+  space.add(starsFar);
+  space.add(starsNear);
 
-    practicals.push({ light: p, base: intensity, phase: Math.random() * 10 });
-  };
+  const nebulaA = makeGlowSprite(new THREE.Color(0x6b4cff), 1.0);
+  nebulaA.position.set(320, 120, -1200);
+  nebulaA.scale.setScalar(720);
+  nebulaA.material.opacity = 0.16;
+  nebulaA.material.depthWrite = false;
+  space.add(nebulaA);
 
-  addPractical(-9.5, 5.5, -8, 0x66d9ff, 3.1, 22);
-  addPractical(9.5, 5.0, -6, 0x66ffcc, 2.8, 22);
-  addPractical(0.0, 6.5, -10, 0x99bbff, 2.6, 24);
+  const nebulaB = makeGlowSprite(new THREE.Color(0x66ffcc), 0.95);
+  nebulaB.position.set(-420, -80, -1400);
+  nebulaB.scale.setScalar(680);
+  nebulaB.material.opacity = 0.12;
+  nebulaB.material.depthWrite = false;
+  space.add(nebulaB);
+
+  const planet = new THREE.Mesh(
+    new THREE.SphereGeometry(140, 64, 48),
+    new THREE.MeshStandardMaterial({
+      color: 0x11162a,
+      metalness: 0.05,
+      roughness: 1.0,
+      envMapIntensity: 0.6,
+    })
+  );
+  planet.position.set(520, -180, -1700);
+  planet.rotation.y = 0.6;
+  space.add(planet);
+
+  const atmosphere = new THREE.Mesh(
+    new THREE.SphereGeometry(143, 64, 48),
+    new THREE.MeshBasicMaterial({
+      color: 0x66d9ff,
+      transparent: true,
+      opacity: 0.06,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      side: THREE.BackSide,
+    })
+  );
+  atmosphere.position.copy(planet.position);
+  space.add(atmosphere);
 
   const animatePracticals = (t, flashKick) => {
-    practicals.forEach((p, i) => {
-      const breathe = 0.85 + 0.15 * Math.sin(t * 0.9 + p.phase + i * 0.7);
-      const flash = 1.0 + 0.6 * flashKick;
-      p.light.intensity = p.base * breathe * flash;
-    });
+    starsFar.rotation.y = t * 0.004;
+    starsNear.rotation.y = t * 0.009;
+    starsNear.rotation.x = t * 0.003;
+
+    const twinkle = 0.92 + 0.08 * Math.sin(t * 0.35);
+    starsFar.material.opacity = 0.9 * twinkle;
+    starsNear.material.opacity = 0.55 * twinkle;
+
+    nebulaA.material.opacity = 0.15 + 0.015 * Math.sin(t * 0.08) + 0.015 * flashKick;
+    nebulaB.material.opacity = 0.11 + 0.012 * Math.sin(t * 0.06);
+
+    planet.rotation.y = 0.6 + t * 0.01;
   };
 
-  return { lab, practicals, animatePracticals };
+  return { lab: space, practicals: [], animatePracticals };
 }
 

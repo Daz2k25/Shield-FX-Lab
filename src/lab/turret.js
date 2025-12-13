@@ -4,7 +4,7 @@ import { metal } from './materials.js';
 
 export function createTurret(scene) {
   const turret = new THREE.Group();
-  turret.position.set(-7.6, 2.25, 4.9);
+  turret.position.set(-24.0, 8.0, 16.0);
   scene.add(turret);
 
   const turretBase = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.65, 0.35, 24), metal(0x0b1322, 0.8, 0.35));
@@ -31,4 +31,3 @@ export function createTurret(scene) {
 
   return { turret, turretHead, muzzle, muzzleGlow };
 }
-
