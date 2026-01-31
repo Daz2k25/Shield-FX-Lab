@@ -124,6 +124,23 @@ export const shieldFrag = `
         return textureCube(uEnv, dir).rgb;
       }
 
+      // Triangle/Geodesic pattern
+      float triGrid(vec2 uv, float scale) {
+        float w = 0.05;
+        // line 1 (horizontal)
+        float d1 = abs(fract(uv.y * scale) - 0.5);
+        // line 2 (60 deg)
+        float c = 0.5; float s = 0.866025;
+        vec2 uv2 = vec2(uv.x*c - uv.y*s, uv.x*s + uv.y*c);
+        float d2 = abs(fract(uv2.y * scale) - 0.5);
+        // line 3 (120 deg)
+        vec2 uv3 = vec2(uv.x*c + uv.y*s, -uv.x*s + uv.y*c);
+        float d3 = abs(fract(uv3.y * scale) - 0.5);
+
+        float d = min(min(d1, d2), d3);
+        return smoothstep(w, w*0.4, d);
+      }
+
       // ring + hotspot from one impact
       void impactField(vec3 n, int idx, float tNow, out float ring, out float hot, out float crack){
         float t0 = uImpactTime[idx];
@@ -217,6 +234,8 @@ export const shieldFrag = `
         float hex = 0.0;
         float fieldLines = 0.0;
         float hardEdge = 0.0;
+        float plasma = 0.0;
+        float tri = 0.0;
 
         if (uPreset == 1) { // hex / cellular
           float h = hexGrid(vUv, uHexDensity);
@@ -232,6 +251,14 @@ export const shieldFrag = `
           fieldLines = smoothstep(0.65, 0.98, abs(linesA*linesL)) * (0.35 + 1.35*ringSum + 0.6*hotSum);
         } else if (uPreset == 3) { // hard-light glass
           hardEdge = smoothstep(0.25, 0.85, fres) * 1.3;
+        } else if (uPreset == 4) { // Plasma
+          float p1 = fbm(N*3.0 + vec3(uTime*0.2));
+          float p2 = fbm(N*6.0 - vec3(uTime*0.3));
+          float mixP = sin(p1*10.0 + p2*5.0 + uTime);
+          plasma = smoothstep(0.4, 0.6, mixP) * (0.5 + 0.5*sin(uTime + N.y*10.0));
+        } else if (uPreset == 5) { // Geodesic
+          float t = triGrid(vUv, uHexDensity);
+          tri = t * (0.45 + 1.15*hotSum + 0.75*ringSum);
         }
 
         // fake refraction/reflection mix
@@ -271,6 +298,8 @@ export const shieldFrag = `
         field += hex * 0.55;
         field += fieldLines * 0.70;
         field += hardEdge * 0.45;
+        field += plasma * 0.60;
+        field += tri * 0.55;
 
         // Overload instability
         float instab = 0.0;
